@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import './index.css';
 import AuthPage from './components/AuthPage';
-import PresentationEditor from './components/PresentationEditor';
+import Home from './components/Home';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
     <div className="App">
         <Routes>
             <Route path='/' element={<AuthPage />} />
-            <Route path='/editor' element={<PresentationEditor />} />
+            <Route path='/editor' element={<Home />} />
         </Routes>
     </div>
   );

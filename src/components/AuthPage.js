@@ -24,7 +24,7 @@ const AuthPage = () => {
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 />
-            <button type="submit" className="btn btn-outline-warning w-75">Join</button>
+            <button type="submit" className="btn btn-outline-danger w-75">Join</button>
         </form>
     </div>
   );
