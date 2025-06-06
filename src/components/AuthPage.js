@@ -14,9 +14,12 @@ const AuthPage = () => {
     };
 
   return (
-    <div className="d-flex vh-100 justify-content-center align-items-center bg-light">
-        <form onSubmit={handleSubmit} className="p-5 border bg-white rounded-4 d-flex flex-column align-items-center w-25">
-            <h4 className="mb-5 text-secondary-emphasis">Enter your nickname</h4>
+    <div className="d-flex flex-column vh-100 justify-content-start align-items-center bg-light">
+        <div className='w-100 d-flex align-items-center justify-content-center p-5'>
+            <h1 className='fw-bold'>Deckly</h1>
+        </div>
+        <form onSubmit={handleSubmit} className="p-5 border bg-white rounded-4 d-flex flex-column align-items-center w-25 shadow p-3 my-5 bg-body-tertiary rounded">
+            <h4 className="mb-5 text-secondary-emphasis fw-light">Enter your nickname</h4>
                 <input
                 type="text"
                 className="form-control mb-5 w-75"
