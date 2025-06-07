@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
 import { useParams } from 'react-router-dom';
 import { Stage, Layer, Text, Rect } from 'react-konva';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +21,28 @@ const Presentation = () => {
 
     const navigate = useNavigate();
 
+    const socketRef = useRef(null);
+
+    useEffect(() => {
+      socketRef.current = io('http://localhost:3001');
+      socketRef.current.emit('join', id);
+
+      socketRef.current.on('updateSlides', (incomingSlides) => {
+        setSlides(incomingSlides);
+      });
+
+      return () => {
+        socketRef.current.disconnect();
+      };
+    }, [id]);
+
+    const broadcastSlides = (updatedSlides) => {
+      setSlides(updatedSlides);
+      if (socketRef.current) {
+        socketRef.current.emit('updateSlides', { id, slides: updatedSlides });
+      }
+    };
+
     const addTextBlock = () => {
       const newText = {
         id: Date.now(),
@@ -32,7 +55,7 @@ const Presentation = () => {
       };
       const newSlides = [...slides];
       newSlides[currentSlideIndex].elements.push(newText);
-      setSlides(newSlides);
+      broadcastSlides(newSlides);
     };
 
     const updatePosition = (id, x, y) => {
@@ -40,7 +63,7 @@ const Presentation = () => {
       newSlides[currentSlideIndex].elements = newSlides[currentSlideIndex].elements.map(el =>
         el.id === id ? { ...el, x, y } : el
       );
-      setSlides(newSlides);
+      broadcastSlides(newSlides);
     };
 
     return (
@@ -68,7 +91,7 @@ const Presentation = () => {
                                 Text
                               </button>
                               {showTextOptions && (
-                                <div className="position-absolute bg-white border p-2 rounded" style={{ top: '105%', width:'80px', left: -14, zIndex: 10 }}>
+                                <div className="position-absolute bg-white border p-2 rounded" style={{ top: '110%', width:'80px', left: -14, zIndex: 10 }}>
                                     <div className="d-flex gap-2 mb-2 align-items-center justify-content-center">
                                         <button
                                         style={{width:'25px'}}
@@ -98,7 +121,8 @@ const Presentation = () => {
                               )}
                             </div>
                         </div>
-                        <button type="button" className="btn btn-danger rounded-3 px-2 py-1" style={{height:'30px'}} data-bs-toggle="modal" data-bs-target="#staticBackdrop">Share</button>
+                        <button type="button" className="btn btn-light rounded-3 px-2 py-1 me-3" style={{height:'30px'}}><i class="bi bi-tv me-2" onClick={() => navigate(`/present/${id}`)}></i>Play</button>
+                        <button type="button" className="btn btn-danger rounded-3 px-2 py-1" style={{height:'30px'}} data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-person-plus me-2"></i>Share</button>
                 </div>
                 <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
@@ -143,7 +167,8 @@ const Presentation = () => {
                               </div>
                             ))}
                             <button className="btn btn-sm btn-outline-danger mt-2 w-100 " onClick={() => {
-                            setSlides([...slides, { id: Date.now(), elements: [] }]);
+                            const newSlides = [...slides, { id: Date.now(), elements: [] }];
+                            broadcastSlides(newSlides);
                             setCurrentSlideIndex(slides.length);
                             }}>
                                 <i class="bi bi-plus-lg me-1"></i>
@@ -238,7 +263,7 @@ const Presentation = () => {
                                   onClick={() => {
                                     const newSlides = [...slides];
                                     newSlides[currentSlideIndex].elements = newSlides[currentSlideIndex].elements.filter(el => el.id !== selectedId);
-                                    setSlides(newSlides);
+                                    broadcastSlides(newSlides);
                                     setSelectedId(null);
                                   }}
                                 >
@@ -253,7 +278,7 @@ const Presentation = () => {
                                 onBlur={() => {
                                   const newSlides = [...slides];
                                   newSlides[currentSlideIndex].elements = newSlides[currentSlideIndex].elements.map(el => el.id === editingText ? { ...el, text: editingValue } : el);
-                                  setSlides(newSlides);
+                                  broadcastSlides(newSlides);
                                   setEditingText(null);
                                 }}
                                 onKeyDown={(e) => {
@@ -261,7 +286,7 @@ const Presentation = () => {
                                     e.preventDefault();
                                     const newSlides = [...slides];
                                     newSlides[currentSlideIndex].elements = newSlides[currentSlideIndex].elements.map(el => el.id === editingText ? { ...el, text: editingValue } : el);
-                                    setSlides(newSlides);
+                                    broadcastSlides(newSlides);
                                     setEditingText(null);
                                   }
                                 }}
