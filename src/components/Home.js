@@ -18,18 +18,51 @@ const Home = () => {
     <>
         {!nickname && <NicknameOverlay onSubmit={(nickname) => setNickname(nickname)} />}
         <div className='container-fluid bg-light vh-100 m-0 px-0 d-flex flex-column justify-content-center' style={{ filter: !nickname ? 'blur(5px)' : 'none' }}>
-            <div style={{top:'0px'}} className='m-0 p-1 text-center position-fixed w-100 border border-danger border-end-0 border-start-0' >
+            <div style={{top:'0px'}} className='m-0 p-1 d-flex justify-content-between align-items-center position-fixed w-100' >
                 <img style={{width:'60px'}} src='/images/logo.png'></img>
+                <div className='dropdown'>
+                    <button 
+                    className='btn btn-outline-danger rounded-3 p-0 d-flex justify-content-center align-items-center me-3' 
+                    style={{width:'40px', height:'40px'}}
+                    type='button'
+                    data-bs-toggle='dropdown'
+                    aria-expanded='false'
+                    >
+                        <i class="bi bi-person-circle fs-2"></i>
+                    </button>
+                    <ul className='dropdown-menu dropdown-menu-end'>
+                        <li>
+                            <h5 className='p-1 text-center fw-bolder'>{nickname}</h5>
+                            <button
+                                className='btn btn-outline-danger dropdown-item'
+                                onClick={()=> {
+                                    localStorage.removeItem('nickname');
+                                    window.location.reload();
+                                }}
+                            >
+                                Change nickname
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
-                <div className='w-100 d-flex align-items-center justify-content-start p-5'>
-                    <h1 className='fw-bolder'>Welcome, {nickname}</h1>
+                <div className='w-100 d-flex align-items-center justify-content-center p-5'>
+                    <h1 className='fw-bolder'>Create with Deckly, {nickname}!</h1>
                 </div>
                 <div className='d-flex w-100 flex-column align-items-center justify-content-center' style={{zIndex:'2'}}>
                     <h2 className='fw-light'>Get Started</h2>
                     <div className='d-flex flex-row column-gap-4 mt-5'>
-                        <button type="button" class="btn btn-outline-danger fs-5 fw-lighter">
+                        <button
+                            type="button"
+                            className="btn btn-outline-danger fs-5 fw-lighter"
+                            onClick={() => {
+                                const newId = Math.random().toString(36).substring(2, 8);
+                              window.location.href = `/presentation/${newId}`;
+                            }}
+                        >
                             <i className="bi bi-plus-square-dotted me-2"></i>
-                            Create new</button>
+                            Create new
+                        </button>
                         <button type="button" class="btn btn-outline-danger fs-5 fw-lighter">
                             <i class="bi bi-person-plus me-2"></i>
                             Join existing</button>
