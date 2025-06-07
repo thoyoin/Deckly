@@ -67,7 +67,7 @@ const Home = () => {
                     data-bs-toggle='dropdown'
                     aria-expanded='false'
                     >
-                        <i class="bi bi-person-circle fs-2"></i>
+                        <i className="bi bi-person-circle fs-2"></i>
                     </button>
                     <ul className='dropdown-menu dropdown-menu-end'>
                         <li>
@@ -104,10 +104,10 @@ const Home = () => {
                         </button>
                         <button 
                             type="button" 
-                            class="btn btn-outline-danger fs-5 fw-lighter"
+                            className="btn btn-outline-danger fs-5 fw-lighter"
                             onClick={() => setShowJoinModal(true)}
                             >
-                            <i class="bi bi-person-plus me-2"></i>
+                            <i className="bi bi-person-plus me-2"></i>
                             Join existing</button>
                     </div>
                 </div>

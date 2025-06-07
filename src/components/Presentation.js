@@ -77,7 +77,7 @@ const Presentation = () => {
                 </style>
                 <div style={{ top: '0px', zIndex: '5', background: '#f8f9fa', height: '60px' }} className='mb-0 p-2 px-4 text w-100 d-flex flex-row justify-content-between align-items-center'>
                     <div>
-                        <button type="button" className="btn btn-danger rounded-3 px-2 py-1" style={{height:'30px'}} onClick={() => navigate('/Home')}><i class="bi bi-house"></i></button>
+                        <button type="button" className="btn btn-danger rounded-3 px-2 py-1" style={{height:'30px'}} onClick={() => navigate('/')}><i className="bi bi-house"></i></button>
                     </div>
                         <div className='mx-auto d-flex flex-row justify-content-center'>
                             <div className="position-relative">
@@ -121,21 +121,21 @@ const Presentation = () => {
                               )}
                             </div>
                         </div>
-                        <button type="button" className="btn btn-light rounded-3 px-2 py-1 me-3" style={{height:'30px'}}><i class="bi bi-tv me-2" onClick={() => navigate(`/present/${id}`)}></i>Play</button>
-                        <button type="button" className="btn btn-danger rounded-3 px-2 py-1" style={{height:'30px'}} data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-person-plus me-2"></i>Share</button>
+                        <button type="button" className="btn btn-light rounded-3 px-2 py-1 me-3" style={{height:'30px'}}><i className="bi bi-tv me-2" onClick={() => navigate(`/present/${id}`)}></i>Play</button>
+                        <button type="button" className="btn btn-danger rounded-3 px-2 py-1" style={{height:'30px'}} data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i className="bi bi-person-plus me-2"></i>Share</button>
                 </div>
-                <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5 fw-bold" id="staticBackdropLabel">Provide this ID to the user to join</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div className="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5 fw-bold" id="staticBackdropLabel">Provide this ID to the user to join</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
+                        <div className="modal-body">
                             <h5 className='fw-light'>{id}</h5>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-dark" data-bs-dismiss="modal">Close</button>
                         </div>
                         </div>
                     </div>
@@ -171,7 +171,7 @@ const Presentation = () => {
                             broadcastSlides(newSlides);
                             setCurrentSlideIndex(slides.length);
                             }}>
-                                <i class="bi bi-plus-lg me-1"></i>
+                                <i className="bi bi-plus-lg me-1"></i>
                                 Add Slide
                             </button>
                         </div>
