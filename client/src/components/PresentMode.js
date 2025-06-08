@@ -10,7 +10,7 @@ const PresentMode = () => {
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
     useEffect(() => {
-        socketRef.current = io('http://localhost:3001');
+        socketRef.current = io(process.env.REACT_APP_BACKEND_URL);
         socketRef.current.emit('join', id);
 
         socketRef.current.on('updateSlides', (incomingSlides) => {
