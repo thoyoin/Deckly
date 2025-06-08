@@ -24,7 +24,8 @@ io.on('connection', (socket) => {
         presentations[id] = {
             slides: [{ id: Date.now(), elements: [] }],
             users: [],
-            ownerName: nickname
+            ownerName: nickname,
+            ownerSocketId: socket.id
         };
         socket.emit('roomCreated', id);
     });
@@ -41,7 +42,7 @@ io.on('connection', (socket) => {
         console.log(`User ${socket.id} joined room ${presentationId}`);
 
         presentations[presentationId].users = presentations[presentationId].users.filter(u => u.id !== socket.id);
-        const role = nickname === presentations[presentationId].ownerName ? 'creator' : 'viewer';
+        const role = socket.id === presentations[presentationId].ownerSocketId ? 'creator' : 'viewer';
         presentations[presentationId].users.push({
             id: socket.id,
             name: nickname,
