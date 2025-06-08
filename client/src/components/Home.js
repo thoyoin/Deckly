@@ -17,6 +17,7 @@ const Home = () => {
 
         socketRef.current.on('roomCreated', (id) => {
             socketRef.current.emit('join', id, nickname, true);
+            lastJoinIdRef.current = id;
         });
 
         socketRef.current.on('roomNotFound', () => {
