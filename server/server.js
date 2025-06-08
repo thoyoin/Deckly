@@ -30,20 +30,19 @@ io.on('connection', (socket) => {
         socket.emit('roomCreated', id);
     });
 
-    socket.on('join', (presentationId, nickname, isCreator) => {
+    socket.on('join', (presentationId, nickname) => {
         if (!presentations[presentationId]) {
             socket.emit('roomNotFound');
             return;
         }
 
-        console.log('Join:', nickname, '| Expected creator:', presentations[presentationId].ownerName);
         socket.join(presentationId);
         socket.emit('usersUpdate', presentations[presentationId].users);
         console.log(`User ${socket.id} joined room ${presentationId}`);
 
         presentations[presentationId].users = presentations[presentationId].users.filter(u => u.id !== socket.id);
 
-        const role = isCreator ? 'creator' : 'viewer';
+        const role = 'creator';
 
         presentations[presentationId].users.push({
             id: socket.id,
