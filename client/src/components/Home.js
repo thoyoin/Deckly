@@ -16,7 +16,7 @@ const Home = () => {
         socketRef.current = io('https://deckly-back.onrender.com');
 
         socketRef.current.on('roomCreated', (id) => {
-            window.location.href = `/presentation/${id}`;
+            socketRef.current.emit('join', id, nickname, true);
         });
 
         socketRef.current.on('roomNotFound', () => {
@@ -63,7 +63,7 @@ const Home = () => {
                         const trimmed = joinId.trim();
                         if (trimmed) {
                             lastJoinIdRef.current = trimmed;
-                            socketRef.current.emit('join', trimmed);
+                            socketRef.current.emit('join', trimmed, nickname, false);
                         }
                     }}
                 style={{width:'300px'}} 

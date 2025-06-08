@@ -42,7 +42,9 @@ io.on('connection', (socket) => {
         console.log(`User ${socket.id} joined room ${presentationId}`);
 
         presentations[presentationId].users = presentations[presentationId].users.filter(u => u.id !== socket.id);
-        const role = socket.id === presentations[presentationId].ownerSocketId ? 'creator' : 'viewer';
+
+        const role = isCreator ? 'creator' : 'viewer';
+
         presentations[presentationId].users.push({
             id: socket.id,
             name: nickname,
