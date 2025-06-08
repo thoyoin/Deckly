@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
         socket.emit('roomCreated', id);
     });
 
-    socket.on('join', (presentationId, nickname) => {
+    socket.on('join', (presentationId, nickname, isCreator) => {
         if (!presentations[presentationId]) {
             socket.emit('roomNotFound');
             return;
