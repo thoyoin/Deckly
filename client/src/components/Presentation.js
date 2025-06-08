@@ -25,7 +25,41 @@ const Presentation = () => {
     const [stageScale, setStageScale] = useState({ x: 1, y: 1 });
     
     const textOptionsRef = useRef(null);
+    
+    useEffect(() => {
+        socketRef.current = io('https://deckly-back.onrender.com', {
+            transports: ['polling', 'websocket']
+          });
+    
+        socketRef.current.on('roomNotFound', () => {
+            alert('Комната с таким ID не найдена!');
+            navigate('/'); 
+        });
 
+        socketRef.current.on('updateSlides', (incomingSlides) => {
+            setSlides(incomingSlides);
+            if (incomingSlides[currentSlideIndex] === undefined) {
+                setCurrentSlideIndex(Math.max(0, incomingSlides.length - 1));
+            }
+        });
+        
+        socketRef.current.on('connect', () => {
+            const storedNickname = localStorage.getItem('nickname');
+            if (storedNickname) {
+                socketRef.current.emit('join', id, storedNickname);
+            }
+        });
+
+        socketRef.current.on('usersUpdate', (updatedUsers) => {
+            console.log('👥 usersUpdate:', updatedUsers);
+            setUsers(updatedUsers);
+        });
+
+        return () => {
+            socketRef.current.disconnect();
+        };
+    }, [id]);
+    
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (textOptionsRef.current && !textOptionsRef.current.contains(event.target)) {
@@ -61,39 +95,6 @@ const Presentation = () => {
 
     const socketRef = useRef(null);
 
-    useEffect(() => {
-        socketRef.current = io('https://deckly-back.onrender.com', {
-            transports: ['polling', 'websocket']
-          });
-    
-        socketRef.current.on('roomNotFound', () => {
-            alert('Комната с таким ID не найдена!');
-            navigate('/'); 
-        });
-
-        socketRef.current.on('updateSlides', (incomingSlides) => {
-            setSlides(incomingSlides);
-            if (incomingSlides[currentSlideIndex] === undefined) {
-                setCurrentSlideIndex(Math.max(0, incomingSlides.length - 1));
-            }
-        });
-        
-        socketRef.current.on('connect', () => {
-            const storedNickname = localStorage.getItem('nickname');
-            if (storedNickname) {
-                socketRef.current.emit('join', id, storedNickname);
-            }
-        });
-
-        socketRef.current.on('usersUpdate', (updatedUsers) => {
-            console.log('👥 usersUpdate:', updatedUsers);
-            setUsers(updatedUsers);
-        });
-
-        return () => {
-            socketRef.current.disconnect();
-        };
-    }, [id]);
 
     useEffect(() => {
         const storedNickname = localStorage.getItem('nickname');
