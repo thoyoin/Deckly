@@ -28,7 +28,10 @@ const Presentation = () => {
     
     useEffect(() => {
         socketRef.current = io('https://deckly-back.onrender.com', {
-            transports: ['polling', 'websocket']
+            transports: ['polling', 'websocket'],
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000
           });
     
         socketRef.current.on('roomNotFound', () => {
@@ -59,7 +62,7 @@ const Presentation = () => {
             socketRef.current.disconnect();
         };
     }, [id]);
-    
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (textOptionsRef.current && !textOptionsRef.current.contains(event.target)) {
