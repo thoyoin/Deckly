@@ -13,7 +13,7 @@ const Home = () => {
     const socketRef = useRef(null);
 
     useEffect(() => {
-        socketRef.current = io('http://localhost:3001');
+        socketRef.current = io(process.env.REACT_APP_BACKEND_URL);
 
         socketRef.current.on('roomCreated', (id) => {
             window.location.href = `/presentation/${id}`;
