@@ -10,7 +10,7 @@ const PresentMode = () => {
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
     useEffect(() => {
-        socketRef.current = io(process.env.REACT_APP_BACKEND_URL);
+        socketRef.current = io('https://deckly-back.onrender.com');
         socketRef.current.emit('join', id);
 
         socketRef.current.on('updateSlides', (incomingSlides) => {

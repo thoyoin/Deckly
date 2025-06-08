@@ -13,7 +13,7 @@ const Home = () => {
     const socketRef = useRef(null);
 
     useEffect(() => {
-        socketRef.current = io(process.env.REACT_APP_BACKEND_URL);
+        socketRef.current = io('https://deckly-back.onrender.com');
 
         socketRef.current.on('roomCreated', (id) => {
             window.location.href = `/presentation/${id}`;

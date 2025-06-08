@@ -62,7 +62,7 @@ const Presentation = () => {
     const socketRef = useRef(null);
 
     useEffect(() => {
-        socketRef.current = io(process.env.REACT_APP_BACKEND_URL, {
+        socketRef.current = io('https://deckly-back.onrender.com', {
             transports: ['polling', 'websocket']
           });
     
