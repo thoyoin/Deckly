@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import { Stage, Layer, Text } from 'react-konva';
 
@@ -22,6 +22,21 @@ const PresentMode = () => {
         socketRef.current.disconnect();
         };
     }, [id]);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape' || e.key === ' ') {
+            navigate('/presentation/' + id);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [navigate, id]);
 
     useEffect(() => {
         const handleKey = (e) => {
@@ -47,9 +62,38 @@ const PresentMode = () => {
     }
 
     return (
-        <div style={{ width: '100vw', height: '100vh', background: '#000', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ width: '100vw', height: '100vh', background: '#000', display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'center' }}>
+            <div className="d-flex align-items-center my-3">
+                <button class="carousel-control-prev" type="button" disabled={currentSlideIndex === 0} onClick={() => setCurrentSlideIndex(i => Math.max(0, i - 1))} data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+
+                <div className="d-flex">
+                  {slides.map((_, idx) => (
+                    <div
+                      key={idx}
+                      className="mx-1"
+                      style={{
+                        width: '100px',
+                        height: '5px',
+                        borderRadius: '2px',
+                        backgroundColor: idx === currentSlideIndex ? 'white' : 'gray',
+                        opacity: 0.8,
+                        cursor: 'pointer',
+                        transition: 'background-color 0.3s'
+                      }}
+                      onClick={() => setCurrentSlideIndex(idx)}
+                    />
+                  ))}
+                </div>
+                <button class="carousel-control-next" type="button" disabled={currentSlideIndex === slides.length - 1} onClick={() => setCurrentSlideIndex(i => Math.min(slides.length - 1, i + 1))} data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
         {currentSlide && (
-            <div style={{ width: '90vw', maxWidth: '1920px', aspectRatio: '16 / 9', background: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+            <div style={{ width: '80vw', marginTop:'5px' , maxWidth: '1920px', aspectRatio: '16 / 9', background: 'white', borderRadius: '8px', overflow: 'hidden' }}>
             <Stage width={1920} height={1080} style={{ width: '100%', height: '100%' }}>
                 <Layer>
                 {currentSlide.elements.map((el) => (

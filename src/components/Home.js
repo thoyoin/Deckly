@@ -1,4 +1,5 @@
-import React, {useState} from 'react'
+import React, { useState, useEffect, useRef } from 'react';
+import { io } from 'socket.io-client';
 import Marquee from "react-fast-marquee";
 import NicknameOverlay from './NicknameOverlay';
 
@@ -6,6 +7,33 @@ const Home = () => {
     const [nickname, setNickname] = useState(null);
     const [showJoinModal, setShowJoinModal] = useState(false);
     const [joinId, setJoinId] = useState('');
+
+    const lastJoinIdRef = useRef('');
+
+    const socketRef = useRef(null);
+
+    useEffect(() => {
+        socketRef.current = io('http://localhost:3001');
+
+        socketRef.current.on('roomCreated', (id) => {
+            window.location.href = `/presentation/${id}`;
+        });
+
+        socketRef.current.on('roomNotFound', () => {
+            alert('Комната с таким ID не найдена!');
+        });
+
+        socketRef.current.on('updateSlides', () => {
+            const idToJoin = lastJoinIdRef.current;
+            if (idToJoin) {
+            window.location.href = `/presentation/${idToJoin}`;
+            }
+        });
+
+        return () => {
+            socketRef.current.disconnect();
+        };
+    }, []);
 
     const images = [
         "/images/1.png",
@@ -31,11 +59,13 @@ const Home = () => {
                     zIndex: 9999
                 }}>
                 <form onSubmit={(e) => {
-                    e.preventDefault();
-                    if (joinId.trim()) {
-                        window.location.href = `/presentation/${joinId.trim()}`;
-                    }
-                }} 
+                        e.preventDefault();
+                        const trimmed = joinId.trim();
+                        if (trimmed) {
+                            lastJoinIdRef.current = trimmed;
+                            socketRef.current.emit('join', trimmed);
+                        }
+                    }}
                 style={{width:'300px'}} 
                 className="p-4 bg-white rounded shadow d-flex flex-column align-items-center">
                   <h4 className="mb-4 fw-bold">Enter the room ID</h4>
@@ -95,8 +125,7 @@ const Home = () => {
                             type="button"
                             className="btn btn-outline-danger fs-5 fw-lighter"
                             onClick={() => {
-                                const newId = Math.random().toString(36).substring(2, 8);
-                              window.location.href = `/presentation/${newId}`;
+                              socketRef.current.emit('createRoom', nickname);
                             }}
                         >
                             <i className="bi bi-plus-square-dotted me-2"></i>

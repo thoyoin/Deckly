@@ -19,45 +19,68 @@ const presentations = {};
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
-    socket.on('join', (presentationId) => {
-        socket.join(presentationId);
-        console.log(`User ${socket.id} joined room ${presentationId}`);
-
-        if (!presentations[presentationId]) {
-        presentations[presentationId] = {
+    socket.on('createRoom', (nickname) => {
+        const id = Math.random().toString(36).substring(2, 8);
+        presentations[id] = {
             slides: [{ id: Date.now(), elements: [] }],
             users: [],
+            ownerName: nickname
         };
+        socket.emit('roomCreated', id);
+    });
+
+    socket.on('join', (presentationId, nickname) => {
+        if (!presentations[presentationId]) {
+            socket.emit('roomNotFound');
+            return;
         }
 
-        const name = `User-${socket.id.slice(0, 4)}`;
+        console.log('Join:', nickname, '| Expected creator:', presentations[presentationId].ownerName);
+        socket.join(presentationId);
+        socket.emit('usersUpdate', presentations[presentationId].users);
+        console.log(`User ${socket.id} joined room ${presentationId}`);
+
+        presentations[presentationId].users = presentations[presentationId].users.filter(u => u.id !== socket.id);
+        const role = nickname === presentations[presentationId].ownerName ? 'creator' : 'viewer';
         presentations[presentationId].users.push({
-        id: socket.id,
-        name,
-        role: 'editor',
+            id: socket.id,
+            name: nickname,
+            role,
         });
 
         io.to(presentationId).emit('updateSlides', presentations[presentationId].slides);
         io.to(presentationId).emit('usersUpdate', presentations[presentationId].users);
 
         socket.on('updateSlides', ({ id, slides }) => {
-        presentations[id].slides = slides;
-        io.to(id).emit('updateSlides', slides);
+            presentations[id].slides = slides;
+            io.to(id).emit('updateSlides', slides);
         });
 
         socket.on('changeUserRole', ({ presentationId, userId, newRole }) => {
-        const user = presentations[presentationId].users.find((u) => u.id === userId);
-        if (user) {
-            user.role = newRole;
-            io.to(presentationId).emit('usersUpdate', presentations[presentationId].users);
-        }
+            const room = presentations[presentationId];
+            if (!room) return;
+
+            const changer = room.users.find(u => u.id === socket.id);
+
+            const creator = room.users.find(u => u.role === 'creator');
+            if (!changer || changer.id !== creator?.id) return;
+
+            const user = room.users.find(u => u.id === userId);
+
+            if (user) {
+                if (user.id === room.users.find(u => u.role === 'creator')?.id) {
+                    return;
+                }
+                user.role = newRole;
+                io.to(presentationId).emit('usersUpdate', room.users);
+            }
         });
 
         socket.on('disconnect', () => {
-        for (const [id, room] of Object.entries(presentations)) {
-            room.users = room.users.filter((u) => u.id !== socket.id);
-            io.to(id).emit('usersUpdate', room.users);
-        }
+            for (const [id, room] of Object.entries(presentations)) {
+                room.users = room.users.filter((u) => u.id !== socket.id);
+                io.to(id).emit('usersUpdate', room.users);
+            }
         });
     });
 });
